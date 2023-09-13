@@ -1,30 +1,42 @@
 using ASP.NET_LR1;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-Company company = new Company { Title = "Google", Description = "Gooloogooloo" };
+builder.Configuration.
+    AddJsonFile("configuration/Google.json").
+    AddXmlFile("configuration/Apple.xml").
+    AddIniFile("configuration/Microsoft.ini").
+    AddJsonFile("configuration/Person.json");
 
-app.MapGet("/task1", () => { return $"Company title {company.Title}, and it's description {company.Description}"; });
-app.MapGet("/task2", () => { 
-    Random random = new Random();
-    var ourNumber = random.Next(0, 101);
-    return ourNumber;
-    });
-app.Use(async (context, next) => {
-    var password = context.Request.Query["password"];
-    if (password == "aboba")
+app.Map("/task1", (IConfiguration config) =>
+{
+    var companies = config.GetSection("Company");
+    var name = " ";
+    var amount = 0;
+
+    foreach (var company in companies.GetChildren())
     {
-        await next();
+        var currentName = company.Key;
+        var currentAmount = int.Parse(company.GetSection("amount").Value);
+        if (currentAmount > amount)
+        {
+            amount = currentAmount;
+            name = currentName;
+        }
     }
-    else
-    {
-        context.Response.StatusCode = 401;
-        await context.Response.WriteAsync("You aren't allowed here");
-    }
+    return $"The company is {name} and the max amount among others is {amount}";
 });
 
- 
+app.Map("/task2", (IConfiguration config) =>
+{
+    var person = config.GetSection("Person");
+    var name = person.GetSection("name").Value;
+    var age = person.GetSection("age").Value;
+    var hometown = person.GetSection("hometown").Value;
+    return $"My name is {name}, i'm {age} years old and my hometown is {hometown}";
+});
 
 app.Run();
