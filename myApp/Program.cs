@@ -19,7 +19,6 @@ app.MapPost("/calculate", async context => {
     var number1 = int.Parse(form["number1"]);
     var number2 = int.Parse(form["number2"]);
     var operation = form["operation"];
-    var port = context.Request.Host.Port;
     float result = 0;
 
     switch (operation)
