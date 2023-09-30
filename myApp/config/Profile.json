@@ -1,0 +1,31 @@
+{
+  "profile": {
+    "users": [
+      {
+        "name": "Alina",
+        "age": 19,
+        "gender": "Female"
+      },
+      {
+        "name": "Evgenii",
+        "age": 25,
+        "gender": "Male"
+      },
+      {
+        "name": "Julia",
+        "age": 19,
+        "gender": "Female"
+      },
+      {
+        "name": "Liza",
+        "age": 18,
+        "gender": "Female"
+      },
+      {
+        "name": "Andrii",
+        "age": 20,
+        "gender": "Male"
+      }
+    ]
+  }
+}

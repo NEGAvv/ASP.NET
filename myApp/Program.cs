@@ -1,208 +1,152 @@
 using Microsoft.Extensions.Primitives;
-using myApp.Classes;
-using myApp.Interfaces;
 using System.Text;
+using myApp.entities;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services
-    .AddTransient<ICalcService, CalcService>()
-    .AddTransient<IDayTimeService, DayTimeService>();
-
+WebApplicationBuilder builder = WebApplication.CreateBuilder();
+builder.Configuration.AddJsonFile("config/Library.json");
+builder.Configuration.AddJsonFile("config/Profile.json");
 var app = builder.Build();
 
 
-
-app.MapPost("/calculate", async context => {
-    IDayTimeService? dayTimeService = app.Services.GetService<IDayTimeService>();
-    ICalcService? calcService = app.Services.GetService<ICalcService>();
-    var form = await context.Request.ReadFormAsync();
-    var number1 = int.Parse(form["number1"]);
-    var number2 = int.Parse(form["number2"]);
-    var operation = form["operation"];
-    var port = context.Request.Host.Port;
-    float result = 0;
-
-    switch (operation)
-    {
-        case "+":
-            result = calcService.Add(number1, number2);
-            break;
-        case "-":
-            result = calcService.Subtract(number1, number2);
-            break;
-        case "*":
-            result = calcService.Multiply(number1, number2);
-            break;
-        case "/":
-            result = calcService.Divide(number1, number2);
-            break;
-    }
-    var sb = new StringBuilder();
-    sb.Append($"<html lang=\"en\">" +
-        $"<head>" +
-        $"<meta charset=\"UTF-8\">" +
-        $"   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\"" +
-        $"    <title>Calculate and day time services</title>" +
-        $"<style>" +
-        $"   body {{" +
-        $"        display: flex;      " +
-        $"  flex-direction: column;  " +
-        $"     align-items: center;       " +
-        $" justify-content: center;    " +
-        $"    height: 100vh;    " +
-        $"   margin: 0;   " +
-        $" }}   " +
-        $" .container {{   " +
-        $"     display: flex;    " +
-        $"    flex-direction: column;    " +
-        $"    align-items: center;   " +
-        $" }}   " +
-        $" .input-group {{" +
-        $" display: flex;" +
-        $"      flex-direction: row;" +
-        $"       align-items: center;" +
-        $"      justify-content: space-between;" +
-        $"    }}" +
-        $"    input[type=\"number\"], select {{" +
-        $"      margin: 5px 10px;" +
-        $"    }}" +
-        $"    input[type=\"number\"] {{" +
-        $"       width: fit-content;" +
-        $"   }}" +
-        $"  button {{" +
-        $"       margin-top: 10px;" +
-        $"      background-color: #22B14C;" +
-        $"    }}" +
-        $"   .square {{" +
-        $"      width: 100px;" +
-        $"       height: 100px;" +
-        $"       background-color: {dayTimeService.GetDayBackColor()};" +
-        $"        display: flex;" +
-        $"       align-items: center;" +
-        $"       justify-content: center;" +
-        $"       margin-top: 20px;" +
-        $"    }}" +
-        $"    .circle {{" +
-        $"       width: 50px;" +
-        $"      height: 50px;" +
-        $"      background-color: {dayTimeService.GetDayFrontColor()};" +
-        $"      border-radius: 50%;" +
-        $"      display: flex;" +
-        $"      align-items: center;" +
-        $"       justify-content: center;" +
-        $"   }}" +
-        $"   p {{" +
-        $"      margin-top: 10px;" +
-        $"  }}" +
-        $"</style>" +
-        $"</head>" +
-        $"<body>" +
-        $"<div class=\"container\">" +
-        $"<p>Result:{result}</p>" +
-        $"    <a href=\"\\\">Return</a>" +
-        $"</div>" +
-        $"<div class=\"square\">" +
-        $"   <div class=\"circle\"></div>" +
-        $"</div>" +
-        $"<p>{dayTimeService.GetDayTimePhrase()}</p>" +
-        $"</body>" +
-        $"</html>");
-    await context.Response.WriteAsync(sb.ToString());
-});
-
-app.MapGet("/", async context =>
+app.Map("/Library", async (HttpContext context) =>
 {
-    IDayTimeService? dayTimeService = app.Services.GetService<IDayTimeService>();
-    var sb = new StringBuilder();
-    sb.Append($"<html lang=\"en\">" +
-        $"<head>" +
-        $"<meta charset=\"UTF-8\">" +
-        $"   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\"" +
-        $"    <title>Calculate and day time services</title>" +
-        $"<style>" +
-        $"   body {{" +
-        $"        display: flex;      " +
-        $"  flex-direction: column;  " +
-        $"     align-items: center;       " +
-        $" justify-content: center;    " +
-        $"    height: 100vh;    " +
-        $"   margin: 0;   " +
-        $" }}   " +
-        $" .container {{   " +
-        $"     display: flex;    " +
-        $"    flex-direction: column;    " +
-        $"    align-items: center;   " +
-        $" }}   " +
-        $" .input-group {{" +
-        $" display: flex;" +
-        $"      flex-direction: row;" +
-        $"       align-items: center;" +
-        $"      justify-content: space-between;" +
-        $"    }}" +
-        $"    input[type=\"number\"], select {{" +
-        $"      margin: 5px 10px;" +
-        $"    }}" +
-        $"    input[type=\"number\"] {{" +
-        $"       width: fit-content;" +
-        $"   }}" +
-        $"  button {{" +
-        $"       margin-top: 10px;" +
-        $"      background-color: #22B14C;" +
-        $"    }}" +
-        $"  form {{" +
-        $"     display: flex;    " +
-        $"    flex-direction: column;    " +
-        $"    align-items: center;   " +
-        $"    }}" +
-        $"   .square {{" +
-        $"      width: 100px;" +
-        $"       height: 100px;" +
-        $"       background-color: {dayTimeService.GetDayBackColor()};" +
-        $"        display: flex;" +
-        $"       align-items: center;" +
-        $"       justify-content: center;" +
-        $"       margin-top: 20px;" +
-        $"    }}" +
-        $"    .circle {{" +
-        $"       width: 50px;" +
-        $"      height: 50px;" +
-        $"      background-color: {dayTimeService.GetDayFrontColor()};" +
-        $"      border-radius: 50%;" +
-        $"      display: flex;" +
-        $"      align-items: center;" +
-        $"       justify-content: center;" +
-        $"   }}" +
-        $"   p {{" +
-        $"      margin-top: 10px;" +
-        $"  }}" +
-        $"</style>" +
-        $"</head>" +
-        $"<body>" +
-        $"<div class=\"container\">" +    
-        $"<form action=\"/calculate\" method=\"post\">" +
-        $"   <div class=\"input-group\">" +
-        $"     <input required name=\"number1\" type=\"number\" placeholder=\"Input first number\">" +
-        $"       <select required name=\"operation\">" +
-        $"           <option value=\"+\">+</option>" +
-        $"           <option value=\"-\">-</option>" +
-        $"           <option value=\"*\">*</option>" +
-        $"          <option value=\"/\">/</option>" +
-        $"       </select>" +
-        $"      <input required name=\"number2\" type=\"number\" placeholder=\"Input second number\">" +
-        $"   </div>" +
-        $"    <button type=\"submit\">Submit</button>" +  
-        $"</form>" +
-        $"</div>" +
-        $"<div class=\"square\">" +
-        $"   <div class=\"circle\"></div>" +
-        $"</div>" +
-        $"<p>{dayTimeService.GetDayTimePhrase()}</p>" +
-        $"</body>" +
-        $"</html>");
-    await context.Response.WriteAsync(sb.ToString());
+    string greetings = "Welcome to my library";
+    StringBuilder sb = new StringBuilder();
 
+    sb.Append("<div style='text-align: center; font-weight: bold; margin-bottom: 20px;'>");
+    sb.Append($"<h1>{greetings}</h1>");
+    sb.Append("</div>");
+
+    sb.Append("<div style='text-align: center;'>");
+    sb.Append("<a href='/Library'>Library</a> | ");
+    sb.Append("<a href='/Library/Books'>Books</a> | ");
+    sb.Append("<a href='/Profile/'>Profile</a>");
+    sb.Append("</div>");
+
+    await context.Response.WriteAsync(sb.ToString());
 });
 
- 
+app.Map("/Library/Books", async (HttpContext context, IConfiguration appConfig) =>
+{
+    Book[] books = appConfig.GetSection("library:books").Get<Book[]>();
+    StringBuilder sb = new StringBuilder();
+    sb.Append("<div style='max-width: 800px; margin: 0 auto;'>");
+
+    if (books.Length > 0)
+    {
+        sb.Append("<table style='width: 100%; border-collapse: collapse;'>");
+        sb.Append("<tr>" +
+            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name of book</th>" +
+            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Author</th>" +
+            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Pages</th>" +
+            "</tr>");
+
+        foreach (var item in books)
+        {
+            sb.Append("<tr>" +
+            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Name}</td>" +
+            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Author}</td>" +
+            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Pages}</td>" +
+            "</tr>");
+        }
+
+        sb.Append("</table>");
+    }
+    else
+    {
+        sb.Append("<p>No books available.</p>");
+    }
+
+    sb.Append("<div style='text-align: center;'>");
+    sb.Append("<a href='/Library'>Library</a> | ");
+    sb.Append("<a href='/Library/Books'>Books</a> | ");
+    sb.Append("<a href='/Profile/'>Profile</a>");
+    sb.Append("</div>");
+
+    sb.Append("</div>");
+    await context.Response.WriteAsync(sb.ToString());
+});
+app.Map("/Profile/{id:int?}", async (int? id, HttpContext context, IConfiguration appConfig) =>
+{
+    User[] users = appConfig.GetSection("profile:users").Get<User[]>();
+    StringBuilder sb = new StringBuilder();
+    sb.Append("<div style='max-width: 800px; margin: 0 auto;'>");
+
+    if (id.HasValue && users != null && id.Value >= 0 && id.Value < users.Length)
+    {
+        sb.Append("<table style='width: 100%; border-collapse: collapse;'>" +
+        "<tr>" +
+        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name</th>" +
+        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Age</th>" +
+        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Gender</th>" +
+        "</tr>" +
+        "<tr>" +
+        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Name}</td>" +
+        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Age}</td>" +
+        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Gender}</td>" +
+        "</tr>" +
+        "</table>");
+
+        // Navigation links for other user profiles
+        sb.Append("<div style='text-align: center;'>");
+        for (int i = 0; i < users.Length; i++)
+        {
+            if (i == id.Value)
+            {
+                sb.Append($"<span>{users[i].Name}</span> | ");
+            }
+            else
+            {
+                sb.Append($"<a href='/Profile/{i}'>{users[i].Name}</a> | ");
+            }
+        }
+        sb.Append("</div>");
+    }
+    else
+    {
+        sb.Append("<table style='width: 100%; border-collapse: collapse;'>" +
+        "<tr>" +
+        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name</th>" +
+        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Identity</th>" +
+        "</tr>" +
+        "<tr>" +
+        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{context.User}</td>" +
+        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{context.User.Identity}</td>" +
+        "</tr>" +
+        "</table>");
+
+        // Navigation links for user profiles
+        sb.Append("<div style='text-align: center;'>");
+        for (int i = 0; i < users.Length; i++)
+        {
+            sb.Append($"<a href='/Profile/{i}'>{users[i].Name}</a> | ");
+        }
+        sb.Append("</div>");
+    }
+
+    sb.Append("<div style='text-align: center; margin-top: 15px;'>");
+    sb.Append("<a href='/Library'>Library</a> | ");
+    sb.Append("<a href='/Library/Books'>Books</a> | ");
+    sb.Append("<a href='/Profile/'>Profile</a>");
+    sb.Append("</div>");
+
+    sb.Append("</div>");
+    await context.Response.WriteAsync(sb.ToString());
+});
+
+
+
+
+app.Map("/", async context =>
+{
+    StringBuilder sb = new StringBuilder();
+    sb.Append("<div style='text-align: center;'>");
+    sb.Append("<a href='/Library'>Library</a> | ");
+    sb.Append("<a href='/Library/Books'>Books</a> | ");
+    sb.Append("<a href='/Profile/'>Profile</a>");
+    sb.Append("</div>");
+    await context.Response.WriteAsync(sb.ToString());
+});
+
 
 app.Run();

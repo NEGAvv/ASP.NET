@@ -1,0 +1,31 @@
+{
+  "library": {
+    "books": [
+      {
+        "name": "The Witcher",
+        "author": "Andrzej Sapkowski",
+        "pages": 235
+      },
+      {
+        "name": "The Walking Dead",
+        "author": "Robert Kirkman",
+        "pages": 304
+      },
+      {
+        "name": "Invincible",
+        "author": "Robert Kirkman",
+        "pages": 1024
+      },
+      {
+        "name": "Howl's Moving Castle",
+        "author": "Diana Wynne Jones",
+        "pages": 329
+      },
+      {
+        "name": "The Spider's Web",
+        "author": "Ryunosuke Akutagawa",
+        "pages": 5
+      }
+    ]
+  }
+}
