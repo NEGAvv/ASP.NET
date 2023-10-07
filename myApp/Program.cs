@@ -1,152 +1,100 @@
 using Microsoft.Extensions.Primitives;
 using System.Text;
-using myApp.entities;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
-builder.Configuration.AddJsonFile("config/Library.json");
-builder.Configuration.AddJsonFile("config/Profile.json");
 var app = builder.Build();
 
 
-app.Map("/Library", async (HttpContext context) =>
+app.Use(async (context, next) =>
 {
-    string greetings = "Welcome to my library";
+    try
+    {
+        await next.Invoke();
+    }
+    catch (Exception ex)
+    {
+        var log = new StringBuilder();
+        log.AppendLine($"Error: {ex}");
+        log.AppendLine($"Request Path: {context.Request.Path}");
+        log.AppendLine($"Request Method: {context.Request.Method}");
+
+        if (context.Request.HasFormContentType && context.Request.Form.Any())
+        {
+            foreach (var form in context.Request.Form)
+            {
+                log.AppendLine($"Form Data: {form.Key} = {form.Value}");
+            }
+        }
+
+        await File.WriteAllTextAsync("errorlog.txt", log.ToString());
+        throw;
+    }
+});
+
+app.MapGet("/", async context =>
+{
     StringBuilder sb = new StringBuilder();
 
-    sb.Append("<div style='text-align: center; font-weight: bold; margin-bottom: 20px;'>");
-    sb.Append($"<h1>{greetings}</h1>");
-    sb.Append("</div>");
-
-    sb.Append("<div style='text-align: center;'>");
-    sb.Append("<a href='/Library'>Library</a> | ");
-    sb.Append("<a href='/Library/Books'>Books</a> | ");
-    sb.Append("<a href='/Profile/'>Profile</a>");
-    sb.Append("</div>");
-
+    sb.Append("<html><body>" +
+        "<form method=\"post\" action=\"/setcookie\">" +
+        "<label for=\"value\">Value:</label>" +
+        "<input type=\"text\" id=\"value\" name=\"value\"><br>" +
+        "<label for=\"expiration\">Date and time of an expiration:</label>" +
+        "<input type=\"datetime-local\" id=\"expiration\" name=\"expiration\"><br>" +
+        "<input type=\"submit\" value=\"Submit\">" +
+        "</form>" +
+        "</body></html>"
+        );
+        
     await context.Response.WriteAsync(sb.ToString());
 });
 
-app.Map("/Library/Books", async (HttpContext context, IConfiguration appConfig) =>
+app.MapPost("/setcookie", async context =>
 {
-    Book[] books = appConfig.GetSection("library:books").Get<Book[]>();
     StringBuilder sb = new StringBuilder();
-    sb.Append("<div style='max-width: 800px; margin: 0 auto;'>");
-
-    if (books.Length > 0)
+    var value = context.Request.Form["value"];
+    var expirationString = context.Request.Form["expiration"];
+    sb.Append("<html><body>");
+    if (DateTime.Parse(expirationString) < DateTime.Now)
     {
-        sb.Append("<table style='width: 100%; border-collapse: collapse;'>");
-        sb.Append("<tr>" +
-            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name of book</th>" +
-            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Author</th>" +
-            "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Pages</th>" +
-            "</tr>");
-
-        foreach (var item in books)
+        sb.Append($"<p>Value \"{value}\" was not saved in Cookies, because it was expired.</p>");
+        await context.Response.WriteAsync(sb.ToString());
+        throw new Exception();
+    }
+    if (DateTime.TryParse(expirationString, out DateTime expiration))
+    {
+        context.Response.Cookies.Append("MyCookie", value, new CookieOptions
         {
-            sb.Append("<tr>" +
-            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Name}</td>" +
-            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Author}</td>" +
-            $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{item.Pages}</td>" +
-            "</tr>");
-        }
-
-        sb.Append("</table>");
+            Expires = expiration
+        });
+        sb.Append("Value is in Cookies." + "<a href='/checkcookie/'>Check Cookie</a>");
     }
     else
     {
-        sb.Append("<p>No books available.</p>");
+        sb.Append("Error with date");
+        throw new Exception();
     }
-
-    sb.Append("<div style='text-align: center;'>");
-    sb.Append("<a href='/Library'>Library</a> | ");
-    sb.Append("<a href='/Library/Books'>Books</a> | ");
-    sb.Append("<a href='/Profile/'>Profile</a>");
-    sb.Append("</div>");
-
-    sb.Append("</div>");
+    sb.Append("</body></html>");
     await context.Response.WriteAsync(sb.ToString());
 });
-app.Map("/Profile/{id:int?}", async (int? id, HttpContext context, IConfiguration appConfig) =>
+
+app.MapGet("/checkcookie", async context =>
 {
-    User[] users = appConfig.GetSection("profile:users").Get<User[]>();
     StringBuilder sb = new StringBuilder();
-    sb.Append("<div style='max-width: 800px; margin: 0 auto;'>");
 
-    if (id.HasValue && users != null && id.Value >= 0 && id.Value < users.Length)
+    var myCookie = context.Request.Cookies["MyCookie"];
+    sb.Append("<html><body>");
+
+    if (!string.IsNullOrEmpty(myCookie))
     {
-        sb.Append("<table style='width: 100%; border-collapse: collapse;'>" +
-        "<tr>" +
-        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name</th>" +
-        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Age</th>" +
-        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Gender</th>" +
-        "</tr>" +
-        "<tr>" +
-        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Name}</td>" +
-        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Age}</td>" +
-        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{users[id.Value].Gender}</td>" +
-        "</tr>" +
-        "</table>");
-
-        // Navigation links for other user profiles
-        sb.Append("<div style='text-align: center;'>");
-        for (int i = 0; i < users.Length; i++)
-        {
-            if (i == id.Value)
-            {
-                sb.Append($"<span>{users[i].Name}</span> | ");
-            }
-            else
-            {
-                sb.Append($"<a href='/Profile/{i}'>{users[i].Name}</a> | ");
-            }
-        }
-        sb.Append("</div>");
+        sb.Append($"Value in Cookies: {myCookie}");
     }
     else
     {
-        sb.Append("<table style='width: 100%; border-collapse: collapse;'>" +
-        "<tr>" +
-        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Name</th>" +
-        "<th style='padding: 8px; border: 1px solid #ccc; text-align: left; background-color: #f2f2f2;'>Identity</th>" +
-        "</tr>" +
-        "<tr>" +
-        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{context.User}</td>" +
-        $"<td style='padding: 8px; border: 1px solid #ccc; text-align: left;'>{context.User.Identity}</td>" +
-        "</tr>" +
-        "</table>");
-
-        // Navigation links for user profiles
-        sb.Append("<div style='text-align: center;'>");
-        for (int i = 0; i < users.Length; i++)
-        {
-            sb.Append($"<a href='/Profile/{i}'>{users[i].Name}</a> | ");
-        }
-        sb.Append("</div>");
+        sb.Append("Value doesn't found in Cookies");
     }
-
-    sb.Append("<div style='text-align: center; margin-top: 15px;'>");
-    sb.Append("<a href='/Library'>Library</a> | ");
-    sb.Append("<a href='/Library/Books'>Books</a> | ");
-    sb.Append("<a href='/Profile/'>Profile</a>");
-    sb.Append("</div>");
-
-    sb.Append("</div>");
+    sb.Append("</body></html>");
     await context.Response.WriteAsync(sb.ToString());
 });
-
-
-
-
-app.Map("/", async context =>
-{
-    StringBuilder sb = new StringBuilder();
-    sb.Append("<div style='text-align: center;'>");
-    sb.Append("<a href='/Library'>Library</a> | ");
-    sb.Append("<a href='/Library/Books'>Books</a> | ");
-    sb.Append("<a href='/Profile/'>Profile</a>");
-    sb.Append("</div>");
-    await context.Response.WriteAsync(sb.ToString());
-});
-
 
 app.Run();

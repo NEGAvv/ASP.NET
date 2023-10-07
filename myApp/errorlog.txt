@@ -1,0 +1,9 @@
+Error: System.Exception: Exception of type 'System.Exception' was thrown.
+   at Program.<>c.<<<Main>$>b__0_2>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 64
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Program.<>c.<<<Main>$>b__0_0>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 13
+Request Path: /setcookie
+Request Method: POST
+Form Data: value = 123
+Form Data: expiration = 2023-10-05T14:17
