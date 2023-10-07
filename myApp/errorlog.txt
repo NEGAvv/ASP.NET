@@ -1,9 +1,16 @@
+07.10.2023 14:40:07
+An unhandled exception has occurred while executing the request.
+Connection id "0HMU75860ORPT", Request id "0HMU75860ORPT:00000005": An unhandled exception was thrown by the application.
 Error: System.Exception: Exception of type 'System.Exception' was thrown.
-   at Program.<>c.<<<Main>$>b__0_2>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 64
+   at Program.<>c.<<<Main>$>b__0_2>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 68
 --- End of stack trace from previous location ---
    at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
-   at Program.<>c.<<<Main>$>b__0_0>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 13
+   at Program.<>c__DisplayClass0_0.<<<Main>$>b__0>d.MoveNext() in C:\Users\User\source\repos\myApp\myApp\Program.cs:line 14
+Time: 07.10.2023 14:43:56
 Request Path: /setcookie
 Request Method: POST
-Form Data: value = 123
-Form Data: expiration = 2023-10-05T14:17
+Form Data: value = CheckCookieTest
+Form Data: expiration = 2023-10-01T14:43
+
+An unhandled exception has occurred while executing the request.
+Connection id "0HMU75ALCMS3I", Request id "0HMU75ALCMS3I:00000003": An unhandled exception was thrown by the application.

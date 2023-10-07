@@ -1,20 +1,26 @@
 using Microsoft.Extensions.Primitives;
+using MyApp.loggers;
 using System.Text;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder();
+builder.Logging.AddFile(Path.Combine(Directory.GetCurrentDirectory(), "errorlog.txt"));
 var app = builder.Build();
 
 
-app.Use(async (context, next) =>
+app.Use(async (HttpContext context, RequestDelegate next) =>
 {
     try
     {
-        await next.Invoke();
+        await next.Invoke(context);
     }
     catch (Exception ex)
     {
+        var logger = app.Logger;
+        var now = DateTime.Now.ToString();
+
         var log = new StringBuilder();
         log.AppendLine($"Error: {ex}");
+        log.AppendLine($"Time: {now}");
         log.AppendLine($"Request Path: {context.Request.Path}");
         log.AppendLine($"Request Method: {context.Request.Method}");
 
@@ -26,7 +32,7 @@ app.Use(async (context, next) =>
             }
         }
 
-        await File.WriteAllTextAsync("errorlog.txt", log.ToString());
+        logger.LogError(log.ToString());
         throw;
     }
 });
