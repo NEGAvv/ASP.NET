@@ -1,0 +1,92 @@
+﻿@using MVCApp.ViewModels
+@model IndexViewModel
+
+<head>
+    <style>
+        .user-card {
+            border: 0px solid #ccc;
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-card-btn {
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+
+        .user-table th,
+        .user-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .user-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light justify-content-end">
+        <form class="form-inline" method="post" asp-action="Registration" asp-controller="Home">
+            <button class="btn btn-primary mx-3" type="submit">Add User</button>
+        </form>
+    </nav>
+
+    <main class="container mt-3">
+        <section class="user-card bg-body-tertiary">
+            <form method="post" asp-action="FilterUserByAge" asp-controller="Home">
+                <div class="input-group">
+                    <input class="form-control form-control-sm" type="number" placeholder="Input age" name="Age" />
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Filter by Age</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <section class="user-card-btn">
+            <form method="post" asp-action="FilterUserByAge" asp-controller="Home">
+                <div class="input-group justify-content-end">
+                    <button class="btn btn-primary" type="submit">Show All</button>
+                </div>
+            </form>
+        </section>
+
+
+        <section>
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Name</td>
+                            <td>@user.Age</td>
+                            <td>
+                                <form method="post" asp-action="ShowUserProducts" asp-controller="Home">
+                                    <input type="hidden" name="Id" value="@user.Id" />
+                                    <button class="btn btn-info" type="submit">Show Products</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</body>
