@@ -30,9 +30,6 @@ namespace MVCApp.Controllers
                 _users.Add(user);
                 for (int i = 0; i < user.AmountOfProducts; i++)
                 {
-                    // Product product = new Product();    
-                    // product.Id = _productId;
-                    // product.User = user;
                     _products.Add(new Product(_productId,user));
                     Console.WriteLine(_products[i].Id);
                     _productId++;

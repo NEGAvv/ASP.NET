@@ -12,6 +12,7 @@ namespace MVCApp.Models
         [Required]
         public string Password { get; set; }
         [Required]
+        [Range(0, int.MaxValue, ErrorMessage = "Amount Of Products must be a non-negative number")]
         public int AmountOfProducts { get; set; }
         public User() { }
         public User(int id, string name, int age, string password, int amountOfProducts)
