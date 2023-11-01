@@ -18,7 +18,8 @@
                 <ul class="list-group">
                     @foreach (var product in Model.Products)
                     {
-                        <li class="list-group-item">@product.Id. @product.Name - $@product.Price (@product.CreatedDate)</li>
+                        @await Component.InvokeAsync("ProductTable", product)
+                       @*  <li class="list-group-item">@product.Id. @product.Name - $@product.Price (@product.CreatedDate)</li> *@
                     }
                 </ul>
             }

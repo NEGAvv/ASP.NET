@@ -1,7 +1,10 @@
-var builder = WebApplication.CreateBuilder(args);
+using MyAppMVC.Services;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+var builder = WebApplication.CreateBuilder(args);
+builder.Services
+    .AddTransient<IWeatherService, WeatherService>()
+    .AddHttpClient()
+    .AddControllersWithViews();
 
 var app = builder.Build();
 

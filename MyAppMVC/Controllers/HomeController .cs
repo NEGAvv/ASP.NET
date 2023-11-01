@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MyAppMVC.Models;
 using MyAppMVC.ViewModels.HomeViewModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 
@@ -14,6 +15,7 @@ namespace MyAppMVC.Controllers
     {
         static int _productId = 1;
         private static readonly List<Product> _products = new();
+        private static Coord _coord = new();
 
         public ActionResult Index()
         {
@@ -57,5 +59,29 @@ namespace MyAppMVC.Controllers
             ShowProductsViewModel showProductsViewModel = new(_products, newStyle);
             return View("ShowProducts", showProductsViewModel);
         }
+
+      
+        [HttpPost]
+        public ActionResult SetLocationCoords(string latitude, string longitude)
+        {
+            if (Double.TryParse(latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double numberLat) && Double.TryParse(longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double numberLon))
+            {
+                _coord.latitude = numberLat;
+                _coord.longitude = numberLon;
+            }
+            else
+            {
+                throw new Exception();
+            }
+            return RedirectToAction("ShowWeather");
+        }
+
+        [HttpGet]
+        public ActionResult ShowWeather()
+        {
+            Console.WriteLine($"coordinates:\nlat: {_coord.latitude},\nlon: {_coord.longitude},\n {_coord}");
+            return View(_coord);
+        }
+
     }
 }

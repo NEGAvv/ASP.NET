@@ -1,0 +1,17 @@
+﻿@model WeatherData
+@{
+    double temparature = Model.main.temp - 273.15;
+    string location = Model.name;
+    string country = Model.sys.country;
+}
+<div class="container">
+    <h2>Weather Information of @location</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <p>Country: @country</p>
+            <p><Coordinates:Lat: @Model.coord?.latitude, Lon: @Model.coord?.longitude</p>
+            <p>Temperature: @temparature.ToString("N2") &deg;C</p>
+            <p>Weather Description: @Model.weather?[0].description</p>
+        </div>
+    </div>
+</div>
