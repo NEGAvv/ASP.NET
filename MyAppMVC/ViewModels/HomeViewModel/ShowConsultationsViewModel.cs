@@ -1,4 +1,5 @@
 ﻿using MyAppMVC.Models;
+
 namespace MyAppMVC.ViewModels.HomeViewModel
 {
     public enum ShowStyles
@@ -6,5 +7,5 @@ namespace MyAppMVC.ViewModels.HomeViewModel
         List,
         Table
     }
-    public record class ShowProductsViewModel(IEnumerable<Product> Products, ShowStyles ShowStyle);
+    public record class ShowConsultationsViewModel(IEnumerable<Consultation> Consultations, ShowStyles ShowStyle);
 }

@@ -7,12 +7,12 @@ using System.Text;
 
 namespace MyAppMVC.ViewComponents
 {
-    public class ProductTableViewComponent
+    public class ConsultationTableViewComponent
     {
-        public IViewComponentResult Invoke(Product product)
+        public IViewComponentResult Invoke(Consultation consultation)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($"<li class=\"list-group-item\">{@product.Id}.{@product.Name} - ${@product.Price}({@product.CreatedDate})</li>");
+            sb.Append($"<li class=\"list-group-item\">{consultation.Id}.  {consultation.Name} - {consultation.Email} - {consultation.Subject} - ({consultation.DateOfConsultation.ToString("dd.MM.yyyy")})</li>");
             return new HtmlContentViewComponentResult(new HtmlString(sb.ToString()));
         }
     }

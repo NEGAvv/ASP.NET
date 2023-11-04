@@ -1,24 +1,38 @@
-﻿@model Product
+﻿@model Consultation
 @{
-    ViewBag.Title = "Add Product";
+    ViewBag.Title = "Замовити консультацію";
 }
 
 <div class="container">
     <div class="row justify-content-left mt-4">
         <div class="col-md-6">
-            <h2 class="mt-4">Add Products</h2>
-            <form method="post" asp-action="AddProduct" class="form">
+            <h2 class="mt-4">Замовити консультацію</h2>
+            <form method="post" asp-action="CreateConsultation" class="form">
                 <div class="form-group">
-                    <label asp-for="Name">Name of Product</label>
+                    <label asp-for="Name">Ваше ім'я</label>
                     <input type="text" asp-for="Name" class="form-control" required>
+                    <span asp-validation-for="Name" class="text-danger" value="Не вказано ім'я"/>
                 </div>
                 <div class="form-group mt-2">
-                    <label asp-for="Price">Price</label>
-                    <input type="number" asp-for="Price" class="form-control" required>
-                    <span asp-validation-for="Price" class="text-danger">The number should be positive</span>
+                    <label asp-for="Email">Ваша електронна пошта</label>
+                    <input type="email" asp-for="Email" class="form-control" required>
+                    <span asp-validation-for="Email" class="text-danger" value="Не вказано пошту" />
                 </div>
-                <button type="submit" class="btn btn-primary mt-4">Add</button>
+                <div class="form-group mt-2">
+                    <label asp-for="DateOfConsultation">Бажана дата консультації</label>
+                    <input type="date" asp-for="DateOfConsultation" class="form-control" required>
+                    <span asp-validation-for="DateOfConsultation" class="text-danger" value="Не вказано дату" />
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Subject">Предмет</label>
+                    <select asp-for="Subject" asp-items="ViewBag.Subjects" class="form-control" required>
+                        <option value="">Виберіть предмет</option>
+                    </select>
+                    <span asp-validation-for="Subject" class="text-danger" value="Не вказано предмет" />
+                </div>
+                <button type="submit" class="btn btn-primary mt-4">Забронювати</button>
             </form>
         </div>
     </div>
 </div>
+

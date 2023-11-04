@@ -1,8 +1,6 @@
-using MyAppMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
-    .AddTransient<IWeatherService, WeatherService>()
     .AddHttpClient()
     .AddControllersWithViews();
 

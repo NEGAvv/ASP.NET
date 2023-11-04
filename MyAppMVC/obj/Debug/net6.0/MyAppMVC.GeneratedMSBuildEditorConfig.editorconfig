@@ -16,10 +16,6 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\User\source\repos\MyAppMVC\MyAppMVC
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Home/Components/Weather/Default.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb21wb25lbnRzXFdlYXRoZXJcRGVmYXVsdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Home/ErrorView.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFcnJvclZpZXcuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -28,12 +24,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Home/ShowProducts.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93UHJvZHVjdHMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Home/ShowWeather.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93V2VhdGhlci5jc2h0bWw=
+[C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Home/ShowConsultations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaG93Q29uc3VsdGF0aW9ucy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/User/source/repos/MyAppMVC/MyAppMVC/Views/Shared/Error.cshtml]

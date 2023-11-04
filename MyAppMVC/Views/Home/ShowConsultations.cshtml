@@ -1,0 +1,53 @@
+﻿@using MyAppMVC.ViewModels.HomeViewModel
+@model ShowConsultationsViewModel
+
+@{
+    ViewBag.Title = "Консультації";
+}
+
+<div class="container">
+    <div class="row justify-content-left mt-4">
+        <div class="col-md-6">
+            <h2 class="mt-4">Список консультацій</h2>
+            <form method="post" asp-action="ToggleView">
+                <input type="hidden" name="ShowStyle" value="@Model.ShowStyle" />
+                <button type="submit" class="btn btn-primary mt-2 mb-3">Змінити вигляд</button>
+            </form>
+            @if (Model.ShowStyle == ShowStyles.List)
+            {
+                <ul class="list-group">
+                    @foreach (var product in Model.Consultations)
+                    {
+                        @await Component.InvokeAsync("ConsultationTable", product)
+                    }
+                </ul>
+            }
+            else
+            {
+                <table class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Id</th>
+                            <th>Ім'я</th>
+                            <th>Емейл</th>
+                            <th>Предмет</th>
+                            <th>Дата консультації</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var consultation in Model.Consultations)
+                        {
+                            <tr>
+                                <td>@consultation.Id</td>
+                                <td>@consultation.Name</td>
+                                <td>@consultation.Email</td>
+                                <td>@consultation.Subject</td>
+                                <td>@consultation.DateOfConsultation.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

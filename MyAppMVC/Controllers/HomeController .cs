@@ -2,51 +2,71 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyAppMVC.Models;
+using MyAppMVC.ViewModels;
 using MyAppMVC.ViewModels.HomeViewModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace MyAppMVC.Controllers
 {
     public class HomeController : Controller
     {
-        static int _productId = 1;
-        private static readonly List<Product> _products = new();
-        private static Coord _coord = new();
+        static int _consultationId = 1;
+        private static readonly List<Consultation> _consultations = new();
+        private static readonly List<string> _subjects = new List<string> { "JavaScript", "C#", "Java", "Python", "Основи Програмування" };
 
         public ActionResult Index()
         {
+            ViewBag.Subjects = new SelectList(_subjects);
+
             return View();
         }
 
         [HttpPost]
-        public ActionResult AddProduct(Product product)
+        public ActionResult CreateConsultation(Consultation consultation)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid )
             {
-                product.Id = _productId;
-                Console.WriteLine($"{product.Id}, {product.Name}, {product.Price}, {product.CreatedDate}");
-                _products.Add(product);
-                _productId++;
+                if (consultation.Subject == "Основи Програмування" && consultation.DateOfConsultation.DayOfWeek == DayOfWeek.Monday)
+                {
+                    ModelState.AddModelError("DateOfConsultation", "Консультація щодо 'Основи Програмування' не може проходити в понеділок.");
+                    ViewBag.Subjects = new SelectList(_subjects);
+                    return View("Index", consultation);
+                }
+
+                consultation.Id = _consultationId;
+                Console.WriteLine($"{consultation.Id}, {consultation.Name}, {consultation.Email}, {consultation.DateOfConsultation}, {consultation.Subject}");
+                _consultations.Add(consultation);
+                _consultationId++;
 
                 ModelState.Clear();
 
-                return View("Index");
+                return RedirectToAction("Index");
             }
             else {
-                return View("ErrorView");
+                foreach (var key in ModelState.Keys)
+                {
+                    for (int i = 0; i < ModelState[key].Errors.Count; i++)
+                    {
+                        var error = ModelState[key].Errors[i];
+                        ModelState.AddModelError(key, error.ErrorMessage);
+                    }
+                }
+
+                ViewBag.Subjects = new SelectList(_subjects);
+                return View("Index", consultation);
             }
 
         }
 
-        public ActionResult ShowProducts(ShowStyles showStyle)
+        public ActionResult ShowConsultations(ShowStyles showStyle)
         {
             Console.WriteLine($"old style: {showStyle}");
-            ShowProductsViewModel showProductsViewModel = new(_products, showStyle);
-            return View(showProductsViewModel);
+            ShowConsultationsViewModel showConsultationsViewModel = new(_consultations, showStyle);
+            return View(showConsultationsViewModel);
         }
 
 
@@ -56,32 +76,10 @@ namespace MyAppMVC.Controllers
             Console.WriteLine($"old style: {ShowStyle}");
             ShowStyles newStyle = ShowStyle == ShowStyles.List.ToString() ? ShowStyles.Table : ShowStyles.List;
             Console.WriteLine($"new style: {newStyle}");
-            ShowProductsViewModel showProductsViewModel = new(_products, newStyle);
-            return View("ShowProducts", showProductsViewModel);
+            ShowConsultationsViewModel showConsultationsViewModel = new(_consultations, newStyle);
+            return View("ShowConsultations", showConsultationsViewModel);
         }
 
-      
-        [HttpPost]
-        public ActionResult SetLocationCoords(string latitude, string longitude)
-        {
-            if (Double.TryParse(latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double numberLat) && Double.TryParse(longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out double numberLon))
-            {
-                _coord.latitude = numberLat;
-                _coord.longitude = numberLon;
-            }
-            else
-            {
-                throw new Exception();
-            }
-            return RedirectToAction("ShowWeather");
-        }
-
-        [HttpGet]
-        public ActionResult ShowWeather()
-        {
-            Console.WriteLine($"coordinates:\nlat: {_coord.latitude},\nlon: {_coord.longitude},\n {_coord}");
-            return View(_coord);
-        }
 
     }
 }
