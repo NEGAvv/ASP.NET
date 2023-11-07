@@ -9,15 +9,57 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using MyAppMVC.Filters;
 
 namespace MyAppMVC.Controllers
 {
+    [LogActionFilter] //filter to log all actions
     public class HomeController : Controller
     {
+        static int _userId = 1;
         static int _consultationId = 1;
+        private static readonly List<User> _users = new();
         private static readonly List<Consultation> _consultations = new();
         private static readonly List<string> _subjects = new List<string> { "JavaScript", "C#", "Java", "Python", "Основи Програмування" };
 
+        [HttpGet]
+        public ActionResult SignUp()
+        {
+            return View();
+        }
+
+        [UniqueUsersFilter]
+        [HttpPost]
+        public ActionResult SignUp(User user)
+        {
+            Console.WriteLine(user.Login);
+            if (ModelState.IsValid)
+            {
+                user.Id = _userId;
+                Console.WriteLine($"user.Id ---- {user.Id}");
+                _users.Add(user);
+                Response.Cookies.Append("userId", _userId.ToString());
+                _userId++;
+
+                return View("Index");
+            }
+            else
+            {
+                foreach (var key in ModelState.Keys)
+                {
+                    for (int i = 0; i < ModelState[key].Errors.Count; i++)
+                    {
+                        var error = ModelState[key].Errors[i];
+                        ModelState.AddModelError(key, error.ErrorMessage);
+                    }
+                }
+
+                ViewBag.Subjects = new SelectList(_subjects);
+                return View("SignUp", user);
+            }
+        }
+
+        [HttpGet]
         public ActionResult Index()
         {
             ViewBag.Subjects = new SelectList(_subjects);
